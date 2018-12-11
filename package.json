@@ -55,6 +55,6 @@
     "build-watch": "watchify src/lg-hash.js -s LgHash -t [babelify] -o dist/lg-hash.js -v",
     "dev": "watchify src/lg-hash.js -s LgHash -t [babelify] -o ../lightgallery.js/lightgallery/js/lg-hash.js -v",
     "lint": "jshint src",
-    "prepublish": "babel src --out-dir lib --loose all"
+    "prepublish": "npm run build"
   }
 }
