@@ -1,8 +1,9 @@
 var hashDefaults = {
     hash: true
 };
-var Hash = function(element) {
+var Hash = function(element, items) {
     this.el = element;
+    this.items = items;
     this.core = window.lgData[this.el.getAttribute('lg-uid')];
     this.core.s = Object.assign({}, hashDefaults, this.core.s);
     if (this.core.s.hash) {
@@ -25,6 +26,7 @@ Hash.prototype.init = function() {
     // Change hash value on after each slide transition
     utils.on(_this.core.el, 'onAfterSlide.lgtm', function(event) {
         var idx = event.detail.index;
+
         if (_hasArtworkId) {
           window.location.hash = 'lg=' + _this.core.s.galleryId + '&artworkId=' + _this.core.s.dynamicEl[idx].id;
         } else {
@@ -36,10 +38,22 @@ Hash.prototype.init = function() {
     utils.on(window, 'hashchange.lghash', function() {
         _hash = window.location.hash;
         var _idx;
+
+        if (!utils.hasClass(document.body, 'lg-on')) {
+          utils.addClass(document.body, 'lg-on');
+          setTimeout(function() {
+              _this.build(_this.index);
+          });
+        }
+
         if (_hasArtworkId) {
-          _idx = parseInt(_hash.split('&slide=')[1], 10);
+          const artworkId = _hash.split('&artworkId=')[1];
+
+          _idx = parseInt(_this.items.findIndex(function(item) {
+            return item.id === artworkId;
+          }));
         } else {
-          _idx = parseInt(_hash.split('&artworkId=')[1], 10);
+          _idx = parseInt(_hash.split('&slide=')[1], 10);
         }
 
         // it galleryId doesn't exist in the url close the gallery
