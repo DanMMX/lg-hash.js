@@ -16,17 +16,31 @@ var Hash = function(element) {
 Hash.prototype.init = function() {
     var _this = this;
     var _hash;
+    var _hasArtworkId = false;
+
+    if (window.location.hash.indexOf('artworkId') >= 0) {
+      _hasArtworkId = true;
+    }
 
     // Change hash value on after each slide transition
     utils.on(_this.core.el, 'onAfterSlide.lgtm', function(event) {
         var idx = event.detail.index;
-        window.location.hash = 'lg=' + _this.core.s.galleryId + '&artworkId=' + _this.core.s.dynamicEl[idx].id + '&slide=' + idx;
+        if (_hasArtworkId) {
+          window.location.hash = 'lg=' + _this.core.s.galleryId + '&artworkId=' + _this.core.s.dynamicEl[idx].id;
+        } else {
+          window.location.hash = 'lg=' + _this.core.s.galleryId + '&slide=' + idx;
+        }
     });
 
     // Listen hash change and change the slide according to slide value
     utils.on(window, 'hashchange.lghash', function() {
         _hash = window.location.hash;
-        var _idx = parseInt(_hash.split('&slide=')[1], 10);
+        var _idx;
+        if (_hasArtworkId) {
+          _idx = parseInt(_hash.split('&slide=')[1], 10);
+        } else {
+          _idx = parseInt(_hash.split('&artworkId=')[1], 10);
+        }
 
         // it galleryId doesn't exist in the url close the gallery
         if ((_hash.indexOf('lg=' + _this.core.s.galleryId) > -1)) {
